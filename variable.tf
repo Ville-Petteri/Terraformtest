@@ -9,4 +9,10 @@ variable "storageaccount_name" {
 variable "container_name" {
     default ="villepettericontainer2"
 }
-  
+variable "nic_name" {
+    default ="vnet1_nic"
+}
+variable "vm_name" {
+    default ="LS01"
+}
+variable "vm_password" {}
