@@ -71,10 +71,11 @@ resource "azurerm_network_interface" "nic1" {
     name                          = "subnet1"
     subnet_id                     = azurerm_subnet.subnet1.id
     private_ip_address_allocation = "Dynamic"
+    public_ip_address_id          = azurerm_public_ip.pip1.id
   }
 }
 resource "azurerm_linux_virtual_machine" "ls01" {
-  name                            = var.vm_name
+  name                            = "ls01"
   resource_group_name             = azurerm_resource_group.rg.name
   location                        = azurerm_resource_group.rg.location
   size                            = "Standard_D2_v2"
@@ -85,7 +86,7 @@ resource "azurerm_linux_virtual_machine" "ls01" {
   network_interface_ids = [
     azurerm_network_interface.nic1.id,
   ]
-
+  
   source_image_reference {
     publisher = "Canonical"
     offer     = "UbuntuServer"
@@ -131,7 +132,20 @@ resource "azurerm_public_ip" "pip1" {
   location            = azurerm_resource_group.rg.location
   allocation_method   = "Static"
 
-  tags = {
-    environment = "Production"
-  }
+
+}
+
+resource "azurerm_virtual_machine_extension" "vme" {
+  virtual_machine_id         = azurerm_linux_virtual_machine.ls01.id
+  name                       = "vme"
+  publisher                  = "Microsoft.Azure.Extensions"
+  type                       = "CustomScript"
+  type_handler_version       = "2.0"
+  auto_upgrade_minor_version = true
+
+  settings = <<SETTINGS
+{
+  "commandToExecute": "sudo apt-get update && apt-get install -y apache2 && echo 'hello world' > /var/www/html/index.html"
+}
+SETTINGS
 }

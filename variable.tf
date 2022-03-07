@@ -13,6 +13,6 @@ variable "nic_name" {
     default ="vnet1_nic"
 }
 variable "vm_name" {
-    default ="LS01"
+    default ="ls01"
 }
 variable "vm_password" {}
